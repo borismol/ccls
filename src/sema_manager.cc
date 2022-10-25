@@ -369,8 +369,7 @@ void buildPreamble(Session &session, CompilerInvocation &ci,
   // llvmorg-12-init-11522-g4c55c3b66de
   auto bounds = ComputePreambleBounds(*ci.getLangOpts(), *buf, 0);
   // llvmorg-12-init-17739-gf4d02fbe418d
-  if (!task.from_diag && oldP &&
-      oldP->preamble.CanReuse(ci, *buf, bounds, *fs))
+  if (!task.from_diag && oldP && oldP->preamble.CanReuse(ci, *buf, bounds, *fs))
     return;
 #else
   auto bounds = ComputePreambleBounds(*ci.getLangOpts(), buf.get(), 0);
@@ -498,8 +497,7 @@ void *completionMain(void *manager_) {
     std::string content = manager->wfiles->getContent(task->path);
     auto buf = llvm::MemoryBuffer::getMemBuffer(content);
 #if LLVM_VERSION_MAJOR >= 12 // llvmorg-12-init-11522-g4c55c3b66de
-    PreambleBounds bounds =
-        ComputePreambleBounds(*ci->getLangOpts(), *buf, 0);
+    PreambleBounds bounds = ComputePreambleBounds(*ci->getLangOpts(), *buf, 0);
 #else
     PreambleBounds bounds =
         ComputePreambleBounds(*ci->getLangOpts(), buf.get(), 0);
@@ -766,7 +764,7 @@ void SemaManager::onClose(const std::string &path) {
 std::shared_ptr<ccls::Session>
 SemaManager::ensureSession(const std::string &path, bool *created) {
   std::lock_guard lock(mutex);
-  std::shared_ptr<ccls::Session> session = sessions.get(path);
+  std::shared_ptr<ccls::Session> session = sessions.getFirstExisting();
   if (!session) {
     session = std::make_shared<ccls::Session>(
         project_->findEntry(path, false, false), wfiles, pch);

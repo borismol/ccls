@@ -41,6 +41,15 @@ TextEdit toTextEdit(const clang::SourceManager &SM, const clang::LangOptions &L,
                     const clang::FixItHint &FixIt);
 
 template <typename K, typename V> struct LruCache {
+  std::shared_ptr<V> getFirstExisting() {
+    for (auto it = items.begin(); it != items.end(); ++it) {
+      auto x = std::move(*it);
+      std::move_backward(items.begin(), it, it + 1);
+      items[0] = std::move(x);
+      return items[0].second;
+    }
+    return nullptr;
+  }
   std::shared_ptr<V> get(const K &key) {
     for (auto it = items.begin(); it != items.end(); ++it)
       if (it->first == key) {

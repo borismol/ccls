@@ -268,6 +268,9 @@ bool indexer_Parse(SemaManager *completion, WorkingFiles *wfiles,
     do {
       std::unique_lock lock(getFileMutex(path_to_index));
       prev = rawCacheLoad(path_to_index);
+      if (prev) {
+        entry.args = prev->args;
+      }
       if (!prev || prev->no_linkage < no_linkage ||
           cacheInvalid(vfs, prev.get(), path_to_index, entry.args,
                        std::nullopt))
